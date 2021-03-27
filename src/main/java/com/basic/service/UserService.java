@@ -51,8 +51,6 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-
-
     public List<UserDTO> findAll() {
         List<User> list = userRepository.findAll();
         List<UserDTO> listDTO = MapperUtils.mapAll(list, UserDTO.class);
@@ -73,7 +71,9 @@ public class UserService implements UserDetailsService {
                     .username(credentialsDTO.getUsername())
                     .password(credentialsDTO.getPassword())
                     .build();
-            UserDetails authenticateUser = getAuthenticate(user); //REFACTORING
+
+            getAuthenticate(user);
+
             String token = jwtService.generateToken(user);
             return new TokenDTO(user.getUsername(), token);
         } catch (UsernameNotFoundException | InvalidPasswordException e ){
@@ -83,6 +83,7 @@ public class UserService implements UserDetailsService {
 
     public UserDetails getAuthenticate(User user) {
         UserDetails userDetail = loadUserByUsername(user.getUsername());
+
         boolean isMatched = encoder.matches(user.getPassword(), userDetail.getPassword());
 
         if(isMatched) {

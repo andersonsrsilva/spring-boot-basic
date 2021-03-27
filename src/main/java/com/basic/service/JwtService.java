@@ -52,7 +52,7 @@ public class JwtService {
         try {
             Claims claims = getClaims(token);
             Date experitionDate = claims.getExpiration();
-            LocalDate date = experitionDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDateTime date = experitionDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             return LocalDateTime.now().isBefore(ChronoLocalDateTime.from(date));
         }catch (Exception e) {
             return false;
