@@ -3,7 +3,7 @@ package com.basic.service;
 import com.basic.domain.entity.User;
 import com.basic.exception.InvalidPasswordException;
 import com.basic.domain.repository.UserRepository;
-import com.basic.service.dto.CredentialsDTO;
+import com.basic.rest.dto.CredentialsDTO;
 import com.basic.service.dto.TokenDTO;
 import com.basic.service.dto.UserDTO;
 import com.basic.util.MapperUtils;
@@ -21,6 +21,7 @@ import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -60,19 +61,19 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void create(UserDTO dto) {
-        User user = MapperUtils.map(dto, User.class);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+    public void create(UserDTO userDTO) {
+        User user = MapperUtils.map(userDTO, User.class);
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(user);
     }
 
-    public TokenDTO authenticate(CredentialsDTO dto) {
+    public TokenDTO authenticate(CredentialsDTO credentialsDTO) {
         try{
             User user = User.builder()
-                    .password(dto.getPassword())
-                    .password(dto.getPassword())
+                    .username(credentialsDTO.getUsername())
+                    .password(credentialsDTO.getPassword())
                     .build();
-            UserDetails authenticateUser = authenticate(user); //REFACTORING
+            UserDetails authenticateUser = getAuthenticate(user); //REFACTORING
             String token = jwtService.generateToken(user);
             return new TokenDTO(user.getUsername(), token);
         } catch (UsernameNotFoundException | InvalidPasswordException e ){
@@ -80,7 +81,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public UserDetails authenticate(User user) {
+    public UserDetails getAuthenticate(User user) {
         UserDetails userDetail = loadUserByUsername(user.getUsername());
         boolean isMatched = encoder.matches(user.getPassword(), userDetail.getPassword());
 

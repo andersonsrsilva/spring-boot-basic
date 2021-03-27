@@ -1,7 +1,8 @@
 package com.basic.rest.controller;
 
 import com.basic.service.UserService;
-import com.basic.service.dto.CredentialsDTO;
+import com.basic.rest.dto.CredentialsDTO;
+import com.basic.service.dto.TokenDTO;
 import com.basic.service.dto.UserDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,8 +24,15 @@ public class UserController {
 
     @PostMapping("/auth")
     @ApiOperation(value = "Authenticate a user")
-    public ResponseEntity<?> authenticate(@RequestBody CredentialsDTO dto) {
-        userService.authenticate(dto);
+    public ResponseEntity<?> authenticate(@RequestBody @Valid CredentialsDTO credentialsDTO) {
+        TokenDTO tokenDTO = userService.authenticate(credentialsDTO);
+        return new ResponseEntity<>(tokenDTO, HttpStatus.OK);
+    }
+
+    @PostMapping()
+    @ApiOperation(value = "Register a new user")
+    public ResponseEntity<?> create(@RequestBody @Valid UserDTO userDTO) {
+        userService.create(userDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -32,13 +41,6 @@ public class UserController {
     public ResponseEntity<?> findAll() {
         List<UserDTO> list = userService.findAll();
         return new ResponseEntity<>(list, HttpStatus.OK);
-    }
-
-    @PostMapping()
-    @ApiOperation(value = "Register a new user")
-    public ResponseEntity<?> create(@RequestBody UserDTO dto) {
-        userService.create(dto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 }

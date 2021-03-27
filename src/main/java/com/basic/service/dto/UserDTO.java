@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDTO {
 
-    //private Long id;
-
     //add validation
+    private Long id;
     private String name;
     private String username;
     private String password;

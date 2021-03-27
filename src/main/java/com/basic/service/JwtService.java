@@ -14,7 +14,9 @@ import java.util.Date;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Service;
 
+@Service
 public class JwtService {
 
     @Value("${security.jwt.expiration}")
