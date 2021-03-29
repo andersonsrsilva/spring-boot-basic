@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: admin
+      changes:
+        - createTable:
+            tableName: tb_user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+
+
+#        <rollback>
+#            <dropTable tableName="user"/>
+#        </rollback>
+#        <addAutoIncrement tableName="user" columnName="id" columnDataType="bigint" startWith="1" incrementBy="1" />
+#        <createSequence sequenceName="hibernate_sequence" incrementBy="1" startValue="1" />
