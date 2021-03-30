@@ -13,9 +13,10 @@ para projetos com o ecossistema Spring baseados em API.
 * Lombok
 * JJWT
 * Liquibase
-* Swagger2
+* Swagger
 * Modelmapper
 * JUnit 5
+* Ireport 
 
 
 Todos implementados e trabalhando perfeitamente.
