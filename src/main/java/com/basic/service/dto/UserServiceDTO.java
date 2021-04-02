@@ -7,12 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserServiceDTO {
 
-    //add validation
     private Long id;
     private String name;
     private String username;
-    private String password;
 
 }

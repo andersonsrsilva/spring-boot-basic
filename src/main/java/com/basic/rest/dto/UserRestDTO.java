@@ -7,7 +7,10 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
-public class CredentialsDTO {
+public class UserRestDTO {
+
+    @NotBlank(message = "Name is required")
+    private String name;
 
     @NotBlank(message = "Username is required")
     private String username;

@@ -1,11 +1,13 @@
 package com.basic.rest.dto;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotBlank;
 
-public class UserDTO {
-
-    @NotBlank(message = "Name is required")
-    private String name;
+@Data
+@NoArgsConstructor
+public class CredentialsRestDTO {
 
     @NotBlank(message = "Username is required")
     private String username;

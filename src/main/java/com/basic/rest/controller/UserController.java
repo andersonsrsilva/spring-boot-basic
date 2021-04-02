@@ -1,9 +1,10 @@
 package com.basic.rest.controller;
 
+import com.basic.rest.dto.UserRestDTO;
 import com.basic.service.UserService;
-import com.basic.rest.dto.CredentialsDTO;
+import com.basic.rest.dto.CredentialsRestDTO;
 import com.basic.service.dto.TokenDTO;
-import com.basic.service.dto.UserDTO;
+import com.basic.service.dto.UserServiceDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,23 +25,37 @@ public class UserController {
 
     @PostMapping("/auth")
     @ApiOperation(value = "Authenticate a user")
-    public ResponseEntity<?> authenticate(@RequestBody @Valid CredentialsDTO credentialsDTO) {
+    public ResponseEntity<?> authenticate(@RequestBody @Valid CredentialsRestDTO credentialsDTO) {
         TokenDTO tokenDTO = userService.authenticate(credentialsDTO);
         return new ResponseEntity<>(tokenDTO, HttpStatus.OK);
     }
 
     @PostMapping()
-    @ApiOperation(value = "Register a new user")
-    public ResponseEntity<?> create(@RequestBody @Valid UserDTO userDTO) {
-        userService.create(userDTO);
+    @ApiOperation(value = "New record")
+    public ResponseEntity<?> create(@RequestBody @Valid UserRestDTO userRestDTO) {
+        userService.create(userRestDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    @ApiOperation(value = "Edit record")
+    public ResponseEntity<?> store(@RequestBody @Valid Long id, UserRestDTO userRestDTO) {
+        userService.store(id, userRestDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping()
-    @ApiOperation(value = "List users")
+    @ApiOperation(value = "List records")
     public ResponseEntity<?> findAll() {
-        List<UserDTO> list = userService.findAll();
+        List<UserServiceDTO> list = userService.findAll();
         return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation(value = "Find by id")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        UserServiceDTO userServiceDTO = userService.findById(id);
+        return new ResponseEntity<>(userServiceDTO, HttpStatus.OK);
     }
 
 }

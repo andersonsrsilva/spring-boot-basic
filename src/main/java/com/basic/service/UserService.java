@@ -3,9 +3,10 @@ package com.basic.service;
 import com.basic.domain.entity.User;
 import com.basic.exception.InvalidPasswordException;
 import com.basic.domain.repository.UserRepository;
-import com.basic.rest.dto.CredentialsDTO;
+import com.basic.rest.dto.CredentialsRestDTO;
+import com.basic.rest.dto.UserRestDTO;
 import com.basic.service.dto.TokenDTO;
-import com.basic.service.dto.UserDTO;
+import com.basic.service.dto.UserServiceDTO;
 import com.basic.util.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,34 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
 
+
+    public UserServiceDTO findById(Long id) {
+        User user = repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return MapperUtils.map(user, UserServiceDTO.class);
+    }
+
+    public List<UserServiceDTO> findAll() {
+        List<User> list = userRepository.findAll();
+        List<UserServiceDTO> listDTO = MapperUtils.mapAll(list, UserServiceDTO.class);
+
+        return listDTO;
+    }
+
+    @Transactional
+    public void create(UserRestDTO userRestDTO) {
+        User user = MapperUtils.map(userRestDTO, User.class);
+        user.setPassword(passwordEncoder.encode(userRestDTO.getPassword()));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void store(Long id, UserRestDTO userRestDTO) {
+        User user = repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        user.setUsername(userRestDTO.getUsername());
+        user.setName(userRestDTO.getName());
+        userRepository.save(user);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -51,21 +80,7 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    public List<UserDTO> findAll() {
-        List<User> list = userRepository.findAll();
-        List<UserDTO> listDTO = MapperUtils.mapAll(list, UserDTO.class);
-
-        return listDTO;
-    }
-
-    @Transactional
-    public void create(UserDTO userDTO) {
-        User user = MapperUtils.map(userDTO, User.class);
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userRepository.save(user);
-    }
-
-    public TokenDTO authenticate(CredentialsDTO credentialsDTO) {
+    public TokenDTO authenticate(CredentialsRestDTO credentialsDTO) {
         try{
             User user = User.builder()
                     .username(credentialsDTO.getUsername())
