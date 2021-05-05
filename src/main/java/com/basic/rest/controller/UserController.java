@@ -18,17 +18,11 @@ import java.util.List;
 @RestController
 @Api(tags = "User Controller")
 @RequestMapping("/api/users")
+@CrossOrigin("http://localhost:4200")
 public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @PostMapping("/auth")
-    @ApiOperation(value = "Authenticate a user")
-    public ResponseEntity<?> authenticate(@RequestBody @Valid CredentialsRestDTO credentialsDTO) {
-        TokenDTO tokenDTO = userService.authenticate(credentialsDTO);
-        return new ResponseEntity<>(tokenDTO, HttpStatus.OK);
-    }
 
     @PostMapping()
     @ApiOperation(value = "New record")

@@ -3,6 +3,7 @@ package com.basic.service;
 import com.basic.domain.entity.User;
 import com.basic.exception.InvalidPasswordException;
 import com.basic.domain.repository.UserRepository;
+import com.basic.exception.ResourceNotFoundException;
 import com.basic.rest.dto.CredentialsRestDTO;
 import com.basic.rest.dto.UserRestDTO;
 import com.basic.service.dto.TokenDTO;
@@ -21,26 +22,16 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-public class UserService implements UserDetailsService {
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+public class UserService {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder encoder;
-
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private UserRepository repository;
-
+    private PasswordEncoder passwordEncoder;
 
     public UserServiceDTO findById(Long id) {
-        User user = repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return MapperUtils.map(user, UserServiceDTO.class);
     }
 
@@ -60,52 +51,10 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void store(Long id, UserRestDTO userRestDTO) {
-        User user = repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setUsername(userRestDTO.getUsername());
         user.setName(userRestDTO.getName());
         userRepository.save(user);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        //creating tables ROLES
-
-        return org.springframework.security.core.userdetails.User
-                .builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .roles("USER", "ADMIN")
-                .build();
-    }
-
-    public TokenDTO authenticate(CredentialsRestDTO credentialsDTO) {
-        try{
-            User user = User.builder()
-                    .username(credentialsDTO.getUsername())
-                    .password(credentialsDTO.getPassword())
-                    .build();
-
-            getAuthenticate(user);
-
-            String token = jwtService.generateToken(user);
-            return new TokenDTO(user.getUsername(), token);
-        } catch (UsernameNotFoundException | InvalidPasswordException e ){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-    }
-
-    public UserDetails getAuthenticate(User user) {
-        UserDetails userDetail = loadUserByUsername(user.getUsername());
-
-        boolean isMatched = encoder.matches(user.getPassword(), userDetail.getPassword());
-
-        if(isMatched) {
-            return userDetail;
-        }
-
-        throw new InvalidPasswordException();
     }
 
 }

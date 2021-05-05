@@ -1,5 +1,6 @@
 package com.basic.filter;
 
+import com.basic.service.AuthService;
 import com.basic.service.JwtService;
 import com.basic.service.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,11 +18,11 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private JwtService jwtService;
-    private UserService userService;
+    private AuthService authService;
 
-    public JwtAuthFilter(JwtService jwtService, UserService userService) {
+    public JwtAuthFilter(JwtService jwtService, AuthService authService) {
         this.jwtService = jwtService;
-        this.userService = userService;
+        this.authService = authService;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if(isValid) {
                 String userLogin = jwtService.getUserLogged(token);
-                UserDetails user = userService.loadUserByUsername(userLogin);
+                UserDetails user = authService.loadUserByUsername(userLogin);
                 UsernamePasswordAuthenticationToken userAuthToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 userAuthToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(userAuthToken);

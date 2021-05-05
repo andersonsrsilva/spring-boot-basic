@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class TokenDTO {
 
-    private String username;
+    private String name;
     private String token;
 
 }
